@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="LifeGame" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="LifeGame" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="LifeGame" options="-bootclasspath &quot;$APPLICATION_HOME_DIR$/jdk/Contents/Home/jre/lib/resources.jar:$APPLICATION_HOME_DIR$/jdk/Contents/Home/jre/lib/rt.jar:$APPLICATION_HOME_DIR$/jdk/Contents/Home/jre/lib/sunrsasign.jar:$APPLICATION_HOME_DIR$/jdk/Contents/Home/jre/lib/jsse.jar:$APPLICATION_HOME_DIR$/jdk/Contents/Home/jre/lib/jce.jar:$APPLICATION_HOME_DIR$/jdk/Contents/Home/jre/lib/charsets.jar:$APPLICATION_HOME_DIR$/jdk/Contents/Home/jre/lib/jfr.jar:$APPLICATION_HOME_DIR$/jdk/Contents/Home/jre/classes:/Library/Java/JavaVirtualMachines/jdk-13.0.1.jdk/Contents/Home/lib/jfxrt.jar&quot;" />
+    </option>
+  </component>
+</project>

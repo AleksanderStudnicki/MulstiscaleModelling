@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="589.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.lifegame.FXMLController">
+   <children>
+      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#test" text="START" />
+      <Canvas fx:id="canvas" height="800.0" layoutX="16.0" layoutY="95.0" width="800.0" />
+      <Button layoutX="89.0" layoutY="14.0" mnemonicParsing="false" onAction="#nextStep" text="NEXT STEP" />
+      <Button layoutX="184.0" layoutY="14.0" mnemonicParsing="false" onAction="#reset" text="RESET" />
+      <Button layoutX="249.0" layoutY="14.0" mnemonicParsing="false" onAction="#stop" text="STOP" />
+      <Button layoutX="315.0" layoutY="14.0" mnemonicParsing="false" onAction="#setChaos" text="CHAOS" />
+      <TextField fx:id="cellSizeField" layoutX="683.0" layoutY="20.0" prefHeight="17.0" prefWidth="72.0" text="4" />
+      <Label layoutX="623.0" layoutY="25.0" text="Cell size:" />
+      <Label layoutX="439.0" layoutY="25.0" text="Time interval:" />
+      <TextField fx:id="timeIntervalField" layoutX="533.0" layoutY="20.0" prefHeight="17.0" prefWidth="72.0" text="100" />
+      <Button layoutX="387.0" layoutY="14.0" mnemonicParsing="false" onAction="#set" text="SET" />
+      <TextField fx:id="columnsField" layoutX="533.0" layoutY="58.0" prefHeight="17.0" prefWidth="72.0" text="100" />
+      <Label layoutX="469.0" layoutY="63.0" text="Columns:" />
+      <TextField fx:id="linesField" layoutX="683.0" layoutY="58.0" prefHeight="17.0" prefWidth="72.0" text="100" />
+      <Label layoutX="642.0" layoutY="63.0" text="Lines:" />
+      <Button layoutX="284.0" layoutY="52.0" mnemonicParsing="false" onAction="#setNewDimensions" text="SET DIMENSIONS" />
+      <Button layoutX="204.0" layoutY="52.0" mnemonicParsing="false" onAction="#setGliderState" text="GLIDER" />
+      <Button layoutX="84.0" layoutY="52.0" mnemonicParsing="false" onAction="#setOscilator2State" text="OSCILATOR2" />
+      <Button layoutX="14.0" layoutY="52.0" mnemonicParsing="false" onAction="#setCellState" text="CELL" />
+      <Button layoutX="886.0" layoutY="14.0" mnemonicParsing="false" onAction="#setCellularChaos" text="CHAOS" />
+      <Button layoutX="972.0" layoutY="14.0" mnemonicParsing="false" onAction="#nextStepInCellularAutomata2D" text="NEXT STEP" />
+      <Button layoutX="1074.0" layoutY="14.0" mnemonicParsing="false" onAction="#startCellularAutomata" text="START" />
+      <Button layoutX="1150.0" layoutY="14.0" mnemonicParsing="false" onAction="#stopCellularAutomata" text="STOP" />
+      <Canvas fx:id="canvasCA" height="746.0" layoutX="26.0" layoutY="159.0" width="800.0" />
+      <Button layoutX="777.0" layoutY="12.0" mnemonicParsing="false" onAction="#showLifeGameCanvas" text="LG" />
+      <Button layoutX="777.0" layoutY="45.0" mnemonicParsing="false" onAction="#showCellularAutomataCanvas" text="CA" />
+      <TextField fx:id="redField" layoutX="889.0" layoutY="50.0" prefHeight="27.0" prefWidth="65.0" />
+      <TextField fx:id="greenField" layoutX="984.0" layoutY="52.0" prefHeight="27.0" prefWidth="65.0" />
+      <TextField fx:id="blueField" layoutX="1072.0" layoutY="52.0" prefHeight="27.0" prefWidth="65.0" />
+      <Button layoutX="1224.0" layoutY="14.0" mnemonicParsing="false" onAction="#resetCA" text="RESET" />
+      <Label fx:id="cAInfo" layoutX="1160.0" layoutY="55.0" />
+      <Button layoutX="1150.0" layoutY="52.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToVonNeumann" text="VON NEUMANN" />
+      <Button layoutX="1283.0" layoutY="52.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToMoore" text="MOORE" />
+      <CheckBox fx:id="isPeriodicalBox" layoutX="1294.0" layoutY="17.0" mnemonicParsing="false" onAction="#changeCellularAutomataPeriodical" text="isPeriodical" />
+      <CheckBox fx:id="stopAfterAllCellsAreGrains" layoutX="889.0" layoutY="96.0" mnemonicParsing="false" text="stopAfterAllCellsAreGrains" />
+      <Button layoutX="1149.0" layoutY="92.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToHexLeft" text="HEX LEFT" />
+      <Button layoutX="1268.0" layoutY="129.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToPentaRight" text="PENTA RIGHT" />
+      <Button layoutX="1268.0" layoutY="92.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToPentaLeft" text="PENTA LEFT" />
+      <Button layoutX="1150.0" layoutY="129.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToHexRight" text="HEX RIGHT" />
+      <TextField fx:id="grainsField" layoutX="889.0" layoutY="129.0" prefHeight="27.0" prefWidth="72.0" promptText="grains" />
+      <TextField fx:id="radiusField" layoutX="978.0" layoutY="129.0" prefHeight="27.0" prefWidth="72.0" promptText="radius" />
+      <Button layoutX="1050.0" layoutY="129.0" mnemonicParsing="false" onAction="#generateCellularAutomata" text="GENERATE" />
+      <ScrollPane layoutX="889.0" layoutY="206.0" prefHeight="569.0" prefWidth="533.0">
+        <content>
+          <AnchorPane fx:id="anchorStat" minHeight="0.0" minWidth="0.0" prefWidth="536.0" />
+        </content>
+      </ScrollPane>
+      <Button layoutX="15.0" layoutY="101.0" mnemonicParsing="false" onAction="#showStatistics" text="STATS" />
+      <Button layoutX="1152.0" layoutY="165.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToHexRand" text="HEX RAND" />
+      <Button layoutX="1268.0" layoutY="165.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToPentaRand" text="PENTA RAND" />
+   </children>
+</AnchorPane>
