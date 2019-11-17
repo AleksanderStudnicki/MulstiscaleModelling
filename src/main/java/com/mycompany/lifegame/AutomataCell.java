@@ -57,4 +57,15 @@ public class AutomataCell {
             this.grainId[i].set(temp);
         }
     }
+
+    @Override
+    public String toString() {
+        return isGrain + ";" + grainId[0] + ";" + grainId[1] + ";" + grainId[2];
+    }
+
+    public static AutomataCell generateFromString(String string){
+        AutomataCell cell = new AutomataCell();
+
+        return cell;
+    }
 }

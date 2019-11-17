@@ -3,16 +3,8 @@ package com.mycompany.lifegame;
 import com.mycompany.lifegame.CellularAutomataRules.HexagonalRandom;
 import com.mycompany.lifegame.LifeStructure.Glider;
 import com.mycompany.lifegame.LifeStructure.Oscilator2;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,24 +12,95 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+
+import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
+import java.io.*;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 public class FXMLController implements Initializable {
 
+    public LifeGame lifeGame;
+    public CellularAutomata2D cellularAutomata;
+    GraphicsContext gc, gcCA;
+    @FXML
+    TextField timeIntervalField;
+    @FXML
+    TextField cellSizeField;
+    @FXML
+    TextField columnsField;
+    @FXML
+    TextField linesField;
+    @FXML
+    Canvas canvasCA;
+    @FXML
+    TextField blueField;
+    @FXML
+    TextField greenField;
+    @FXML
+    TextField redField;
+    @FXML
+    Label cAInfo;
+    @FXML
+    CheckBox isPeriodicalBox;
+    @FXML
+    CheckBox stopAfterAllCellsAreGrains;
+    @FXML
+    TextField grainsField;
+    @FXML
+    TextField radiusField;
+    @FXML
+    AnchorPane anchorStat;
     @FXML
     private Canvas canvas;
-    GraphicsContext gc, gcCA;
     private int cellSize = 4;
-    public LifeGame lifeGame;
+    EventHandler<MouseEvent> canvasCAOnMouseClicked = new EventHandler<MouseEvent>() {
+        public void handle(final MouseEvent mouseEvent) {
+            int x = (int) (mouseEvent.getX() / cellSize);
+            int y = (int) (mouseEvent.getY() / cellSize);
+            int[] id = new int[3];
+            id[0] = Integer.parseInt(blueField.getText());
+            id[1] = Integer.parseInt(greenField.getText());
+            id[2] = Integer.parseInt(redField.getText());
+            cellularAutomata.setCellAlive(x, y, id);
+            showCellularAutomata2D(cellularAutomata);
+        }
+    };
     private AtomicBoolean isStop = new AtomicBoolean(false);
     private AtomicBoolean isStopCellularAutomata = new AtomicBoolean(false);
     private int timeInterval = 100;
     private String insertChoice = "cell";
-    public CellularAutomata2D cellularAutomata;
+    EventHandler<MouseEvent> canvasOnMouseClicked = new EventHandler<MouseEvent>() {
+        public void handle(final MouseEvent mouseEvent) {
+            int x = (int) (mouseEvent.getX() / cellSize);
+            int y = (int) (mouseEvent.getY() / cellSize);
+            switch (insertChoice) {
+                case "cell":
+                    lifeGame.setCellAlive(x, y);
+                    break;
+                case "oscilator2":
+                    lifeGame.insertLifeStructure(x, y, new Oscilator2());
+                    break;
+                case "glider":
+                    lifeGame.insertLifeStructure(x, y, new Glider());
+                    break;
+            }
+            showLifeGameArea(lifeGame);
+        }
+    };
 
     public void paintLifeStructure(int x, int y) {
         gc.setFill(Color.BLACK);
@@ -78,7 +141,7 @@ public class FXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         new HexagonalRandom().getCoordinatesArray();
-        
+
         gc = canvas.getGraphicsContext2D();
         gcCA = canvasCA.getGraphicsContext2D();
         canvas.setOnMouseClicked(canvasOnMouseClicked);
@@ -194,38 +257,6 @@ public class FXMLController implements Initializable {
         canvas.setVisible(true);
     }
 
-    EventHandler<MouseEvent> canvasOnMouseClicked = new EventHandler<MouseEvent>() {
-        public void handle(final MouseEvent mouseEvent) {
-            int x = (int) (mouseEvent.getX() / cellSize);
-            int y = (int) (mouseEvent.getY() / cellSize);
-            switch (insertChoice) {
-                case "cell":
-                    lifeGame.setCellAlive(x, y);
-                    break;
-                case "oscilator2":
-                    lifeGame.insertLifeStructure(x, y, new Oscilator2());
-                    break;
-                case "glider":
-                    lifeGame.insertLifeStructure(x, y, new Glider());
-                    break;
-            }
-            showLifeGameArea(lifeGame);
-        }
-    };
-
-    EventHandler<MouseEvent> canvasCAOnMouseClicked = new EventHandler<MouseEvent>() {
-        public void handle(final MouseEvent mouseEvent) {
-            int x = (int) (mouseEvent.getX() / cellSize);
-            int y = (int) (mouseEvent.getY() / cellSize);
-            int[] id = new int[3];
-            id[0] = Integer.parseInt(blueField.getText());
-            id[1] = Integer.parseInt(greenField.getText());
-            id[2] = Integer.parseInt(redField.getText());
-            cellularAutomata.setCellAlive(x, y, id);
-            showCellularAutomata2D(cellularAutomata);
-        }
-    };
-
     public void setCellState() {
         insertChoice = "cell";
     }
@@ -275,7 +306,7 @@ public class FXMLController implements Initializable {
     public void changeNeighberhoodRuleToPentaRight() {
         cellularAutomata.neighberhoodRule = "PentaRight";
     }
-    
+
     public void changeNeighberhoodRuleToPentaRand() {
         cellularAutomata.newPentRand();
         cellularAutomata.neighberhoodRule = "PentRand";
@@ -317,45 +348,120 @@ public class FXMLController implements Initializable {
         anchorStat.getChildren().add(canvas);
     }
 
-    @FXML
-    TextField timeIntervalField;
+    public void exportToCSV() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("CEL file", "*.cel"));
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            writeToFile(file);
+        }
+    }
 
-    @FXML
-    TextField cellSizeField;
+    private void writeToFile(File file) {
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-    @FXML
-    TextField columnsField;
+            bufferedWriter.write(cellularAutomata.cellArea.length + ";" + cellularAutomata.cellArea[0].length + "\r\n");
 
-    @FXML
-    TextField linesField;
+            IntStream.range(0, cellularAutomata.cellArea.length)
+                    .forEach(i ->
+                            IntStream.range(0, cellularAutomata.cellArea[i].length)
+                                    .forEach(j -> {
+                                        String output = i + ";" + j + ";" + cellularAutomata.cellArea[i][j].toString() + "\r\n";
+                                        try {
+                                            bufferedWriter.write(output);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }));
 
-    @FXML
-    Canvas canvasCA;
+            bufferedWriter.close();
 
-    @FXML
-    TextField blueField;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-    @FXML
-    TextField greenField;
+    public void saveToBMP() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("PNG file", "*.png"));
+        File file = fileChooser.showSaveDialog(null);
 
-    @FXML
-    TextField redField;
+        if (file != null) {
+            WritableImage writableImage = new WritableImage(cellularAutomata.cellArea[0].length * cellSize, cellularAutomata.cellArea.length * cellSize);
+            canvasCA.snapshot(null, writableImage);
+            RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+            try {
+                ImageIO.write(renderedImage, "png", file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-    @FXML
-    Label cAInfo;
+    public void loadFromFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("CEL file", "*.cel"));
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
+            try {
+                FileReader fileReader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-    @FXML
-    CheckBox isPeriodicalBox;
+                try {
+                    String line = bufferedReader.readLine();
 
-    @FXML
-    CheckBox stopAfterAllCellsAreGrains;
+                    String[] temp = line.split(";");
+                    int height = Integer.parseInt(temp[0]);
+                    int width = Integer.parseInt(temp[1]);
+                    cellularAutomata.cellArea = new AutomataCell[height][width];
+                    cellularAutomata.initializeAutomataCellArray(cellularAutomata.cellArea);
 
-    @FXML
-    TextField grainsField;
+                    line = bufferedReader.readLine();
+                    System.out.println(line);
 
-    @FXML
-    TextField radiusField;
 
-    @FXML
-    AnchorPane anchorStat;
+                    while (line != null) {
+                        String[] values = line.split(";");
+
+                        if(Boolean.parseBoolean(values[2])){
+
+
+                            int x = Integer.parseInt(values[0]);
+                            int y = Integer.parseInt(values[1]);
+
+
+                            cellularAutomata.cellArea[x][y].setIsGrain(true);
+
+                            int r = Integer.parseInt(values[3]);
+                            int g = Integer.parseInt(values[4]);
+                            int b = Integer.parseInt(values[5]);
+
+                            cellularAutomata.cellArea[x][y].setGrainId(new int[]{r, g, b});
+                        }
+
+
+                        line = bufferedReader.readLine();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    bufferedReader.close();
+                    fileReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+
+            showCellularAutomata2D(cellularAutomata);
+        }
+    }
+
 }

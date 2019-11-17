@@ -59,5 +59,8 @@
       <Button layoutX="15.0" layoutY="101.0" mnemonicParsing="false" onAction="#showStatistics" text="STATS" />
       <Button layoutX="1152.0" layoutY="165.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToHexRand" text="HEX RAND" />
       <Button layoutX="1268.0" layoutY="165.0" mnemonicParsing="false" onAction="#changeNeighberhoodRuleToPentaRand" text="PENTA RAND" />
+      <Button layoutX="847.0" layoutY="165.0" mnemonicParsing="false" onAction="#exportToCSV" text="Export to CSV" />
+      <Button layoutX="972.0" layoutY="165.0" mnemonicParsing="false" onAction="#saveToBMP" text="Export to BMP" />
+      <Button layoutX="1090.0" layoutY="165.0" mnemonicParsing="false" onAction="#loadFromFile" text="Import" />
    </children>
 </AnchorPane>
