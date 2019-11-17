@@ -66,6 +66,13 @@ public class FXMLController implements Initializable {
     AnchorPane anchorStat;
     @FXML
     private Canvas canvas;
+    @FXML
+    TextField minRadiusField;
+    @FXML
+    TextField maxRadiusField;
+    @FXML
+    TextField inclusionsAmountField;
+
     private int cellSize = 4;
     EventHandler<MouseEvent> canvasCAOnMouseClicked = new EventHandler<MouseEvent>() {
         public void handle(final MouseEvent mouseEvent) {
@@ -438,6 +445,9 @@ public class FXMLController implements Initializable {
                             int b = Integer.parseInt(values[5]);
 
                             cellularAutomata.cellArea[x][y].setGrainId(new int[]{r, g, b});
+
+                            Phase phase = Phase.valueOf(values[6]);
+                            cellularAutomata.cellArea[x][y].setPhase(phase);
                         }
 
 
@@ -462,6 +472,14 @@ public class FXMLController implements Initializable {
 
             showCellularAutomata2D(cellularAutomata);
         }
+    }
+
+    public void setInclusionProperties(){
+        int minRadius = Integer.parseInt(this.minRadiusField.getText());
+        int maxRadius = Integer.parseInt(this.maxRadiusField.getText());
+        int amountOfInclusions = Integer.parseInt(this.inclusionsAmountField.getText());
+
+        cellularAutomata.setInclusionProperties(maxRadius, minRadius, amountOfInclusions);
     }
 
 }

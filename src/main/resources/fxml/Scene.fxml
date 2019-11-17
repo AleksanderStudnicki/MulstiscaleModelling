@@ -62,5 +62,13 @@
       <Button layoutX="847.0" layoutY="165.0" mnemonicParsing="false" onAction="#exportToCSV" text="Export to CSV" />
       <Button layoutX="972.0" layoutY="165.0" mnemonicParsing="false" onAction="#saveToBMP" text="Export to BMP" />
       <Button layoutX="1090.0" layoutY="165.0" mnemonicParsing="false" onAction="#loadFromFile" text="Import" />
+      <Label layoutX="607.0" layoutY="93.0" text="Max radius:" />
+      <TextField fx:id="maxRadiusField" layoutX="683.0" layoutY="88.0" prefHeight="17.0" prefWidth="72.0" text="10" />
+      <Label layoutX="459.0" layoutY="93.0" text="Min radius:" />
+      <TextField fx:id="minRadiusField" layoutX="533.0" layoutY="88.0" prefHeight="17.0" prefWidth="72.0" text="5" />
+      <CheckBox fx:id="inclusionsCheckbox" layoutX="776.0" layoutY="87.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="101.0" text="inclusions" />
+      <TextField fx:id="inclusionsAmountField" layoutX="534.0" layoutY="115.0" prefHeight="17.0" prefWidth="72.0" text="5" />
+      <Label layoutX="414.0" layoutY="121.0" text="inclusions amount:" />
+      <Button layoutX="629.0" layoutY="116.0" mnemonicParsing="false" onAction="#setInclusionProperties" text="SET INCLUSIONS" />
    </children>
 </AnchorPane>

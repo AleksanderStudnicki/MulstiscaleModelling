@@ -18,6 +18,7 @@ public class AutomataCell {
 
     private AtomicBoolean isGrain;
     private AtomicInteger[] grainId;
+    private Phase phase = Phase.REGULAR;
 
     public AutomataCell() {
         this.isGrain = new AtomicBoolean(false);
@@ -60,12 +61,20 @@ public class AutomataCell {
 
     @Override
     public String toString() {
-        return isGrain + ";" + grainId[0] + ";" + grainId[1] + ";" + grainId[2];
+        return isGrain + ";" + grainId[0] + ";" + grainId[1] + ";" + grainId[2] + ";" + phase;
     }
 
     public static AutomataCell generateFromString(String string){
         AutomataCell cell = new AutomataCell();
 
         return cell;
+    }
+
+    public Phase getPhase() {
+        return phase;
+    }
+
+    public void setPhase(Phase phase) {
+        this.phase = phase;
     }
 }

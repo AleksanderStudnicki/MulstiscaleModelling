@@ -5,24 +5,15 @@
  */
 package com.mycompany.lifegame;
 
-import com.mycompany.lifegame.CellularAutomataRules.BorderRule;
-import com.mycompany.lifegame.CellularAutomataRules.CellularAutomataRule;
-import com.mycompany.lifegame.CellularAutomataRules.HexagonalLeftRule;
-import com.mycompany.lifegame.CellularAutomataRules.HexagonalRandom;
-import com.mycompany.lifegame.CellularAutomataRules.HexagonalRightRule;
-import com.mycompany.lifegame.CellularAutomataRules.MooreRule;
-import com.mycompany.lifegame.CellularAutomataRules.PentagonalLeftRule;
-import com.mycompany.lifegame.CellularAutomataRules.PentagonalRandom;
-import com.mycompany.lifegame.CellularAutomataRules.PentagonalRightRule;
-import com.mycompany.lifegame.CellularAutomataRules.VonNeumannRule;
+import com.mycompany.lifegame.CellularAutomataRules.*;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
 
 /**
- *
  * @author ales
  */
 public class CellularAutomata2D {
@@ -31,7 +22,11 @@ public class CellularAutomata2D {
     volatile String neighberhoodRule = "vonNeumann";
     boolean isPeriodical = false;
     AtomicBoolean isAllCellsGrains = new AtomicBoolean(false);
-    
+
+    int minInclusionRadius = 5;
+    int maxInclusionRadius = 10;
+    int amountOfInlucions = 5;
+
     HexagonalRandom hexRand;
     PentagonalRandom pentRand;
 
@@ -47,17 +42,23 @@ public class CellularAutomata2D {
             initializeAutomataCellArray(temp);
             for (int i = 0; i < cellArea.length; i++) {
                 for (int j = 0; j < cellArea[i].length; j++) {
-                    int[] tempId = getStrongestNeighborId(i, j, rule);
-                    if (tempId != null) {
-                        temp[i][j].setIsGrain(true);
-                        temp[i][j].setGrainId(tempId);
-                    } else {
-                        if (cellArea[i][j].getIsGrain()) {
+                        if(cellArea[i][j].getPhase() == Phase.INCLUSION){
                             temp[i][j].setIsGrain(true);
+                            temp[i][j].setPhase(Phase.INCLUSION);
                             temp[i][j].setGrainId(cellArea[i][j].getGrainId());
+                        } else{
+                            int[] tempId = getStrongestNeighborId(i, j, rule);
+                            if (tempId != null) {
+                                temp[i][j].setIsGrain(true);
+                                temp[i][j].setGrainId(tempId);
+                            } else {
+                                if (cellArea[i][j].getIsGrain()) {
+                                    temp[i][j].setIsGrain(true);
+                                    temp[i][j].setGrainId(cellArea[i][j].getGrainId());
+                                }
+                            }
                         }
                     }
-                }
             }
             this.cellArea = temp;
         }
@@ -124,7 +125,7 @@ public class CellularAutomata2D {
             if (isPeriodical) {
                 int newX = (x + arr[0] + cellArea.length) % cellArea.length;
                 int newY = (y + arr[1] + cellArea.length) % cellArea.length;
-                if (cellArea[newX][newY].getIsGrain()) {
+                if (cellArea[newX][newY].getPhase() != Phase.INCLUSION && cellArea[newX][newY].getIsGrain()) {
                     occuranceFinder.addOccurance(new Occurance(cellArea[newX][newY].getGrainId()));
                 }
             } else {
@@ -132,7 +133,7 @@ public class CellularAutomata2D {
                         && (y + arr[1]) >= 0
                         && (x + arr[0]) < cellArea.length
                         && (y + arr[1]) < cellArea.length) {
-                    if (cellArea[x + arr[0]][y + arr[1]].getIsGrain()) {
+                    if (cellArea[x + arr[0]][y + arr[1]].getPhase() != Phase.INCLUSION && cellArea[x + arr[0]][y + arr[1]].getIsGrain()) {
                         occuranceFinder.addOccurance(new Occurance(cellArea[x + arr[0]][y + arr[1]].getGrainId()));
                     }
                 }
@@ -176,29 +177,31 @@ public class CellularAutomata2D {
         for (AutomataCell arr[] : this.cellArea) {
             for (int i = 0; i < arr.length; i++) {
                 arr[i].setIsGrain(false);
+                arr[i].setPhase(Phase.REGULAR);
             }
         }
     }
 
     public void generateCellArea(int grains, int radius) {
         reset();
+        addInclusions();
         Random randomGenerator = new Random();
         for (int i = 0; i < grains; i++) {
-            
-            
+
+
             boolean isSet = false;
-            
-            while(!isSet){
-            
-            int x = randomGenerator.nextInt(cellArea.length);
-            int y = randomGenerator.nextInt(cellArea[0].length);
-                
-            if (isAbleToSetGrain(x, y, radius)) {
-                cellArea[x][y].setIsGrain(true);
-                cellArea[x][y].setRandomId();
-                isSet = true;
-            }
-            
+
+            while (!isSet) {
+
+                int x = randomGenerator.nextInt(cellArea.length);
+                int y = randomGenerator.nextInt(cellArea[0].length);
+
+                if (isAbleToSetGrain(x, y, radius)) {
+                    cellArea[x][y].setIsGrain(true);
+                    cellArea[x][y].setRandomId();
+                    isSet = true;
+                }
+
             }
         }
     }
@@ -229,7 +232,7 @@ public class CellularAutomata2D {
     }
 
     private boolean inCircle(int x, int y, int x0, int y0, int radius) {
-        int leftSide = ((x - x0) * (x - x0)) + ((y - y0) + (y - y0));
+        int leftSide = ((x - x0) * (x - x0)) + ((y - y0) * (y - y0));
         int rightSide = radius * radius;
         return leftSide <= rightSide;
     }
@@ -243,7 +246,7 @@ public class CellularAutomata2D {
                 if (!isOccuranceInOccurances(occurance, groups, border)) {
                     groups.add(occurance);
                     occurance.incrementCountOfTotalOccurances();
-                    if(border){
+                    if (border) {
                         occurance.incrementBorder();
                     }
                 }
@@ -256,7 +259,7 @@ public class CellularAutomata2D {
         for (Occurance occurance : occurances) {
             if (occurance.equals(newOccurance)) {
                 occurance.incrementCountOfTotalOccurances();
-                if(border){
+                if (border) {
                     occurance.incrementBorder();
                 }
                 return true;
@@ -264,32 +267,32 @@ public class CellularAutomata2D {
         }
         return false;
     }
-    
-    private boolean isBorder(int x, int y){
+
+    private boolean isBorder(int x, int y) {
         AutomataCell cell = cellArea[x][y];
         BorderRule rule = new BorderRule();
-        
-        for(int [] arr : rule.getCoordinatesArray()){
-            if(isPeriodical){
+
+        for (int[] arr : rule.getCoordinatesArray()) {
+            if (isPeriodical) {
                 int newX = (x + arr[0] + cellArea.length) % cellArea.length;
                 int newY = (y + arr[1] + cellArea.length) % cellArea.length;
                 AutomataCell temp = cellArea[newX][newY];
-                if(!isTheSameId(cell.getGrainId(), temp.getGrainId())){
+                if (!isTheSameId(cell.getGrainId(), temp.getGrainId())) {
                     return true;
                 }
-            }else{
-                if((x + arr[0]) >= 0 && (y + arr[1]) >= 0 && (x + arr[0] < cellArea.length) && (y + arr[1]) < cellArea[0].length){
+            } else {
+                if ((x + arr[0]) >= 0 && (y + arr[1]) >= 0 && (x + arr[0] < cellArea.length) && (y + arr[1]) < cellArea[0].length) {
                     AutomataCell temp = cellArea[x + arr[0]][y + arr[1]];
-                    if(!isTheSameId(cell.getGrainId(), temp.getGrainId())){
-                    return true;
+                    if (!isTheSameId(cell.getGrainId(), temp.getGrainId())) {
+                        return true;
                     }
                 }
             }
         }
         return false;
     }
-    
-    private boolean isTheSameId(int[] id1, int [] id2){
+
+    private boolean isTheSameId(int[] id1, int[] id2) {
         for (int i = 0; i < id1.length; i++) {
             if (id1[i] != id2[i]) {
                 return false;
@@ -297,12 +300,59 @@ public class CellularAutomata2D {
         }
         return true;
     }
-    
-    public void newHexRand(){
+
+    public void newHexRand() {
         this.hexRand = new HexagonalRandom();
     }
 
-    public void newPentRand(){
+    public void newPentRand() {
         this.pentRand = new PentagonalRandom();
+    }
+
+    public void setInclusionProperties(int maxInclusionRadius, int minInclusionRadius, int amountOfInlucions) {
+        this.maxInclusionRadius = maxInclusionRadius;
+        this.minInclusionRadius = minInclusionRadius;
+        this.amountOfInlucions = amountOfInlucions;
+    }
+
+    private void addInclusions() {
+        Random random = new Random();
+
+        int[] id = new int[3];
+        id[0] = 0;
+        id[1] = 0;
+        id[2] = 0;
+
+
+        IntStream.range(0, amountOfInlucions)
+                .forEach(inclusion -> {
+                    int choosenRadius = random.nextInt(maxInclusionRadius - minInclusionRadius + 1) + minInclusionRadius;
+
+
+                    int x0 = random.nextInt(cellArea.length);
+                    int y0 = random.nextInt(cellArea[0].length);
+
+                    for (int i = -choosenRadius; i <= choosenRadius; i++) {
+                        for (int j = -choosenRadius; j <= choosenRadius; j++) {
+                            int x = x0 + i;
+                            int y = y0 + j;
+                            if (isPeriodical) {
+                                if (inCircle(x, y, x0, y0, choosenRadius)) {
+                                    cellArea[(x + cellArea.length) % cellArea.length][(y + cellArea[0].length) % cellArea[0].length].setIsGrain(true);
+                                    cellArea[(x + cellArea.length) % cellArea.length][(y + cellArea[0].length) % cellArea[0].length].setPhase(Phase.INCLUSION);
+                                    cellArea[(x + cellArea.length) % cellArea.length][(y + cellArea[0].length) % cellArea[0].length].setGrainId(id);
+                                }
+                            } else {
+                                if (x >= 0 && y >= 0 && x < cellArea.length && y < cellArea.length) {
+                                    if (inCircle(x, y, x0, y0, choosenRadius)) {
+                                        cellArea[x][y].setIsGrain(true);
+                                        cellArea[x][y].setPhase(Phase.INCLUSION);
+                                        cellArea[x][y].setGrainId(id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
     }
 }
